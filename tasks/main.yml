@@ -1,0 +1,50 @@
+---
+# tasks file for ansible-ssh
+
+- name: Install package (Alpine Linux)...
+  become: true
+  community.general.apk:
+    name: "openssh"
+    state: present
+    update_cache: true
+  when: ansible_os_family == 'Alpine'
+  tags:
+    - install
+    - alpine
+
+- name: Install package (Ubuntu Linux)...
+  become: true
+  ansible.builtin.apt:
+    name: "openssh-server"
+    state: present
+    update_cache: true
+  when: ansible_os_family == 'Ubuntu'
+  tags:
+    - install
+    - ubuntu
+
+- name: Enable start on boot...
+  become: true
+  ansible.builtin.service:
+    name: "{{ sshd__service_name }}"
+    enabled: true
+  tags:
+    - install
+    - alpine
+    - ubuntu
+
+- name: Config sshd daemon...
+  become: true
+  ansible.builtin.template:
+    src: sshd_config.j2
+    dest: "{{ sshd__config_dir }}/{{ sshd__config_file }}"
+    owner: "{{ sshd__user }}"
+    group: "{{ sshd__group }}"
+    mode: "0640"
+    validate: "{{ sshd__path }} -t -f %s"
+    backup: true
+  notify: restart sshd
+  tags:
+    - config
+    - alpine
+    - ubuntu

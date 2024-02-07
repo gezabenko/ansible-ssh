@@ -1,0 +1,9 @@
+---
+# defaults file for ansible-ssh
+sshd__config_dir: "/etc/ssh/"
+sshd__config_file: "sshd_config"
+sshd__user: "root"
+sshd__group: "root"
+sshd__path: "/usr/sbin/sshd"
+sshd__service_name: "sshd"
+sshd__port: "22"
